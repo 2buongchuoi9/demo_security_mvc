@@ -2,6 +2,7 @@ package com.den.config;
 
 import com.den.auth.OAuthUser.CustomOAuth2UserService;
 import com.den.auth.UserRootService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,23 +19,19 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
-
-  @Autowired
-  private UserRootService userRootService;
-  @Autowired
-  private CustomOAuth2UserService customOAuth2UserService;
+  private final UserRootService userRootService;
+  private final CustomOAuth2UserService customOAuth2UserService;
 
   @Bean
   public BCryptPasswordEncoder getPasswordEncoder() {
     return new BCryptPasswordEncoder();
   }
-
   @Bean()
   public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authConfig) throws Exception {
     return authConfig.getAuthenticationManager();
   }
-
   @Bean
   public DaoAuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -50,21 +47,18 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             req -> req
                 .requestMatchers("/admin", "/admin/**", "/account/info").authenticated()
-                .anyRequest().permitAll()
-        )
+                .anyRequest().permitAll())
         .formLogin(form -> form
             .loginPage("/account/login")
             .usernameParameter("email")
             .passwordParameter("password")
             .loginProcessingUrl("/account/login-check")
             .defaultSuccessUrl("/account/login/success")
-            .failureUrl("/account/login/failure")
-        )
+            .failureUrl("/account/login/failure"))
         .oauth2Login(ou -> ou
             .authorizationEndpoint(e -> e.baseUri("/oauth2/authorization"))
             .redirectionEndpoint(e -> e.baseUri("/login/oauth2/code/*"))
-            .userInfoEndpoint(e -> e.userService(customOAuth2UserService))
-        )
+            .userInfoEndpoint(e -> e.userService(customOAuth2UserService)))
         .exceptionHandling(e -> e.accessDeniedPage("/account/accessDenied"))
         .build();
   }

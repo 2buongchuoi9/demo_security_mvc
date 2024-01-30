@@ -7,7 +7,7 @@
 <body>
 <jsp:include page="../access/nav.jsp"></jsp:include>
 
-${user}
+<%--${user}--%>
 
 <table border="1">
     <tr>

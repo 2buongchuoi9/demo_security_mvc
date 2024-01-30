@@ -16,12 +16,10 @@ import lombok.NoArgsConstructor;
 public class Role {
   @Id
   private Integer id;
-
   private String name;
-
-
   public Role(RoleUserEnum role ) {
     this.id = role.getValue();
     this.name = role.name();
   }
+
 }

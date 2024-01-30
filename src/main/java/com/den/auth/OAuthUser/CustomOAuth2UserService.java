@@ -5,6 +5,7 @@ import com.den.entity.Role;
 import com.den.entity.User;
 import com.den.repository.UserRepo;
 import com.den.util._enum.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -16,24 +17,17 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
-  @Autowired
-  private UserRepo userRepo;
-
+  private final UserRepo userRepo;
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
     OAuth2User oAuth2User = super.loadUser(userRequest);
-
-
     String typeOAuth = userRequest.getClientRegistration().getClientName();
-    System.out.println("::::::::::::::" + typeOAuth);
-
     OAuth2UserInfo oAuth2UserInfo = switch (typeOAuth) {
       case "Google" -> new GoogleUserInfo(oAuth2User.getAttributes());
       default -> new GoogleUserInfo(oAuth2User.getAttributes());
     };
-
-
     Optional<User> userOptional = userRepo.findByEmail(oAuth2UserInfo.getEmail());
     User user;
     if (userOptional.isPresent()) {
@@ -53,7 +47,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
           .image(oAuth2UserInfo.getImageUrl())
           .build());
     }
-
     return UserRoot.create(user, oAuth2UserInfo.getAttributes());
   }
 }

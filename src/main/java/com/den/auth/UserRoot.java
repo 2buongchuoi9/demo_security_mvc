@@ -17,11 +17,8 @@ import java.util.stream.Collectors;
 @Builder
 public class UserRoot implements UserDetails, OAuth2User {
   private User user;
-
   private Collection<? extends GrantedAuthority> authorities;
-
   private Map<String, Object> attributes;
-
 
   public static UserRoot create(User user) {
     List<GrantedAuthority> authorities = user.getRoles()
@@ -32,7 +29,6 @@ public class UserRoot implements UserDetails, OAuth2User {
         .authorities(authorities)
         .build();
   }
-
   public static UserRoot create(User user, Map<String, Object> attributes) {
     UserRoot userRoot = UserRoot.create(user);
     userRoot.setAttributes(attributes);

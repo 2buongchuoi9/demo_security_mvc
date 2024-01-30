@@ -14,13 +14,11 @@ import java.util.List;
 public class ProductController {
   @Autowired
   private ProductRepo productRepo;
-
   @RequestMapping("")
   public String index(Model model) {
     model.addAttribute("products", productRepo.findAll());
     return "product";
   }
-
   private void fakeProduct() {
     productRepo.saveAll(List.of(
         Product.builder()
